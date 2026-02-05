@@ -1,6 +1,19 @@
+// Wait for Firebase to be ready
+async function ensureFirebaseReady() {
+    let retries = 0;
+    while (typeof db === 'undefined' && retries < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+    }
+    if (typeof db === 'undefined') {
+        throw new Error('Firebase is not initialized');
+    }
+}
+
 // Get all data from Firestore
 async function getData() {
     try {
+        await ensureFirebaseReady();
         const snapshot = await db.collection(COLLECTION_NAME).get();
         const data = {};
         snapshot.forEach(doc => {
@@ -16,6 +29,7 @@ async function getData() {
 // Save data for a specific name to Firestore
 async function saveNameData(name, data) {
     try {
+        await ensureFirebaseReady();
         await db.collection(COLLECTION_NAME).doc(name).set(data);
         return true;
     } catch (error) {
@@ -28,6 +42,7 @@ async function saveNameData(name, data) {
 // Delete name from Firestore
 async function deleteNameData(name) {
     try {
+        await ensureFirebaseReady();
         await db.collection(COLLECTION_NAME).doc(name).delete();
         return true;
     } catch (error) {
@@ -98,10 +113,27 @@ const secretKeyInput = document.getElementById('secretKeyInput');
 const updateKeyBtn = document.getElementById('updateKeyBtn');
 const currentKeyDisplay = document.getElementById('currentKeyDisplay');
 
-// Initialize
+// Initialize - wait for Firebase to be ready
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadNames();
-    setupEventListeners();
+    try {
+        // Wait a moment for Firebase to initialize
+        let retries = 0;
+        while (typeof db === 'undefined' && retries < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+        
+        if (typeof db === 'undefined') {
+            alert('Firebase failed to initialize. Please refresh the page.');
+            return;
+        }
+        
+        await loadNames();
+        setupEventListeners();
+    } catch (error) {
+        console.error('Initialization error:', error);
+        alert('Failed to initialize the app. Please refresh the page.');
+    }
 });
 
 // Setup event listeners
@@ -337,6 +369,8 @@ async function uploadImageToStorage(file, level) {
     }
     
     try {
+        await ensureFirebaseReady();
+        
         // Show loading message
         const originalAlert = alert;
         alert = () => {}; // Temporarily disable alert

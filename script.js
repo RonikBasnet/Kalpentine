@@ -1,6 +1,19 @@
+// Wait for Firebase to be ready
+async function ensureFirebaseReady() {
+    let retries = 0;
+    while (typeof db === 'undefined' && retries < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+    }
+    if (typeof db === 'undefined') {
+        throw new Error('Firebase is not initialized');
+    }
+}
+
 // Get all data from Firestore
 async function getData() {
     try {
+        await ensureFirebaseReady();
         const snapshot = await db.collection(COLLECTION_NAME).get();
         const data = {};
         snapshot.forEach(doc => {

@@ -10,14 +10,42 @@ const firebaseConfig = {
     measurementId: "G-WXVMD6MF8X"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Initialize Firestore
-const db = firebase.firestore();
-
-// Initialize Storage
-const storage = firebase.storage();
-
-// Collection name
+// Global variables
+let db;
+let storage;
 const COLLECTION_NAME = 'valentineData';
+
+// Initialize Firebase and wait for it to be ready
+function initializeFirebase() {
+    return new Promise((resolve, reject) => {
+        try {
+            // Check if Firebase SDK is loaded
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase SDK not loaded');
+                reject(new Error('Firebase SDK not loaded'));
+                return;
+            }
+            
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            
+            // Initialize Firestore
+            db = firebase.firestore();
+            
+            // Initialize Storage
+            storage = firebase.storage();
+            
+            console.log('Firebase initialized successfully');
+            resolve();
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
+            reject(error);
+        }
+    });
+}
+
+// Initialize immediately when this script loads
+initializeFirebase().catch(error => {
+    console.error('Failed to initialize Firebase:', error);
+    alert('Failed to initialize Firebase. Please refresh the page.');
+});
