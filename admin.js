@@ -316,7 +316,7 @@ async function loadImagesForName(name) {
 }
 
 // Handle file selection
-function handleFileSelect(event, level) {
+async function handleFileSelect(event, level) {
     const file = event.target.files[0];
     if (!file) return;
     
@@ -325,15 +325,54 @@ function handleFileSelect(event, level) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const imageUrl = e.target.result;
-        saveImage(level, imageUrl);
-    };
-    reader.readAsDataURL(file);
+    // Upload to Firebase Storage instead of base64
+    await uploadImageToStorage(file, level);
 }
 
-// Upload image (from file or URL)
+// Upload image to Firebase Storage
+async function uploadImageToStorage(file, level) {
+    if (!currentSelectedName) {
+        alert('Please select a name first!');
+        return;
+    }
+    
+    try {
+        // Show loading message
+        const originalAlert = alert;
+        alert = () => {}; // Temporarily disable alert
+        
+        // Create a unique filename
+        const timestamp = Date.now();
+        const filename = `${currentSelectedName}/${level}_${timestamp}_${file.name}`;
+        const storageRef = storage.ref().child(`valentine-images/${filename}`);
+        
+        // Upload the file
+        const uploadTask = storageRef.put(file);
+        
+        // Monitor upload progress
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            },
+            (error) => {
+                console.error('Upload error:', error);
+                alert = originalAlert;
+                alert('Error uploading image: ' + error.message);
+            },
+            async () => {
+                // Upload completed successfully, get download URL
+                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                alert = originalAlert;
+                await saveImage(level, downloadURL);
+            }
+        );
+    } catch (error) {
+        console.error('Error uploading to storage:', error);
+        alert('Error uploading image. Please try again.');
+    }
+}
+
 // Upload image (from file or URL)
 async function uploadImage(level) {
     if (!currentSelectedName) {
@@ -348,20 +387,16 @@ async function uploadImage(level) {
     const url = urlInput.value.trim();
     
     if (file) {
-        // Use file
+        // Upload file to Firebase Storage
         if (!file.type.startsWith('image/')) {
             alert('Please select an image file!');
             return;
         }
         
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            await saveImage(level, e.target.result);
-            fileInput.value = '';
-        };
-        reader.readAsDataURL(file);
+        await uploadImageToStorage(file, level);
+        fileInput.value = '';
     } else if (url) {
-        // Use URL
+        // Use URL directly (no upload needed)
         await saveImage(level, url);
         urlInput.value = '';
     } else {

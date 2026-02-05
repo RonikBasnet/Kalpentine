@@ -16,5 +16,8 @@ firebase.initializeApp(firebaseConfig);
 // Initialize Firestore
 const db = firebase.firestore();
 
+// Initialize Storage
+const storage = firebase.storage();
+
 // Collection name
 const COLLECTION_NAME = 'valentineData';
