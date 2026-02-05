@@ -30,6 +30,7 @@ async function getData() {
 let currentName = '';
 let currentLevel = 1;
 let userData = null;
+let level5Counter = 0; // Track how many times "No" is clicked at level 5
 
 // DOM Elements
 const nameScreen = document.getElementById('nameScreen');
@@ -161,7 +162,26 @@ function updateQuestionScreen() {
         'This is my last try... please say yes? 😭'
     ];
     
-    desperationLevel.textContent = messages[currentLevel] || '';
+    // Cycling messages specifically for level 5
+    const level5Messages = [
+        'This is my last try... please say yes? 😭',
+        'Okay seriously, please? 🥺',
+        'I\'m begging you now... 😢',
+        'You\'re breaking my heart here... 💔',
+        'One more chance? Please? 🙏',
+        'I won\'t give up! Say yes! 😤',
+        'Pretty please with a cherry on top? 🍒',
+        'You know you want to say yes... 😌',
+        'Just click yes already! 😅',
+        'I\'ll wait forever if I have to... ⏳'
+    ];
+    
+    if (currentLevel === 5) {
+        const messageIndex = level5Counter % level5Messages.length;
+        desperationLevel.textContent = level5Messages[messageIndex];
+    } else {
+        desperationLevel.textContent = messages[currentLevel] || '';
+    }
     
     // Make Yes button bigger and No button smaller as levels increase
     const yesSize = 1 + (currentLevel * 0.1);
@@ -182,8 +202,15 @@ function handleNo() {
             questionScreen.style.animation = 'shake 0.5s';
         }, 10);
     } else {
-        // After 5 no's, force to yes screen
-        handleYes();
+        // At level 5, stay at level 5 but cycle through different messages
+        level5Counter++;
+        updateQuestionScreen();
+        
+        // Add shake animation
+        questionScreen.style.animation = 'none';
+        setTimeout(() => {
+            questionScreen.style.animation = 'shake 0.5s';
+        }, 10);
     }
 }
 
