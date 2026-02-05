@@ -230,7 +230,7 @@ async function addName() {
 }
 
 // Handle name selection
-function handleNameSelect() {
+async function handleNameSelect() {
     const selectedName = nameSelect.value;
     
     if (!selectedName) {
