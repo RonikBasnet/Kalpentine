@@ -112,6 +112,9 @@ Then enable GitHub Pages in repository Settings → Pages.
 - Uses **Firebase Firestore** for cloud storage
 - **Cross-device sync**: Data accessible from any device
 - **No backend required**: Serverless architecture
+- **Images stored as base64** or URLs in Firestore
+  - Keep uploaded images under 800KB for best performance
+  - Or use image URLs (no size limit)
 - **Free tier**: Sufficient for personal use (50k reads/day, 20k writes/day)
 - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for setup instructions
 
@@ -119,9 +122,9 @@ Then enable GitHub Pages in repository Settings → Pages.
 
 - Pure HTML/CSS/JavaScript
 - Firebase Firestore (cloud database)
-- Firebase SDK
+- Firebase SDK (compat version)
 - No frameworks or dependencies
-- FileReader API (for image uploads)
+- FileReader API (for image uploads and base64 encoding)
 
 ## 🎨 Customization
 
@@ -170,7 +173,8 @@ Feel free to fork and add features like:
 ## 💡 Tips
 
 - **Set up Firebase first** - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
-- Keep images under 500KB each for best performance
+- Keep uploaded images under 800KB (or use image URLs for larger files)
+- Compress images before uploading for better performance
 - Use romantic/funny memes for rejection images
 - Use celebratory images for success
 - Test locally before deploying

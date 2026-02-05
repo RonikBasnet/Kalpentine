@@ -348,7 +348,7 @@ async function loadImagesForName(name) {
 }
 
 // Handle file selection
-async function handleFileSelect(event, level) {
+function handleFileSelect(event, level) {
     const file = event.target.files[0];
     if (!file) return;
     
@@ -357,54 +357,26 @@ async function handleFileSelect(event, level) {
         return;
     }
     
-    // Upload to Firebase Storage instead of base64
-    await uploadImageToStorage(file, level);
-}
-
-// Upload image to Firebase Storage
-async function uploadImageToStorage(file, level) {
-    if (!currentSelectedName) {
-        alert('Please select a name first!');
-        return;
+    // Check file size (warn if over 800KB for Firestore limits)
+    if (file.size > 800000) {
+        const continueUpload = confirm(
+            `⚠️ Large Image (${(file.size / 1024 / 1024).toFixed(2)} MB)\n\n` +
+            'This image is quite large. For best results:\n' +
+            '• Firestore has a 1MB document limit\n' +
+            '• Consider using a smaller/compressed image\n' +
+            '• Or use an image URL instead\n\n' +
+            'Continue anyway?'
+        );
+        if (!continueUpload) return;
     }
     
-    try {
-        await ensureFirebaseReady();
-        
-        // Show loading message
-        const originalAlert = alert;
-        alert = () => {}; // Temporarily disable alert
-        
-        // Create a unique filename
-        const timestamp = Date.now();
-        const filename = `${currentSelectedName}/${level}_${timestamp}_${file.name}`;
-        const storageRef = storage.ref().child(`valentine-images/${filename}`);
-        
-        // Upload the file
-        const uploadTask = storageRef.put(file);
-        
-        // Monitor upload progress
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-            },
-            (error) => {
-                console.error('Upload error:', error);
-                alert = originalAlert;
-                alert('Error uploading image: ' + error.message);
-            },
-            async () => {
-                // Upload completed successfully, get download URL
-                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                alert = originalAlert;
-                await saveImage(level, downloadURL);
-            }
-        );
-    } catch (error) {
-        console.error('Error uploading to storage:', error);
-        alert('Error uploading image. Please try again.');
-    }
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const imageUrl = e.target.result;
+        saveImage(level, imageUrl);
+    };
+    reader.readAsDataURL(file);
 }
 
 // Upload image (from file or URL)
@@ -421,16 +393,33 @@ async function uploadImage(level) {
     const url = urlInput.value.trim();
     
     if (file) {
-        // Upload file to Firebase Storage
+        // Use file - convert to base64
         if (!file.type.startsWith('image/')) {
             alert('Please select an image file!');
             return;
         }
         
-        await uploadImageToStorage(file, level);
-        fileInput.value = '';
+        // Check file size
+        if (file.size > 800000) {
+            const continueUpload = confirm(
+                `⚠️ Large Image (${(file.size / 1024 / 1024).toFixed(2)} MB)\n\n` +
+                'This image is quite large. For best results:\n' +
+                '• Firestore has a 1MB document limit\n' +
+                '• Consider using a smaller/compressed image\n' +
+                '• Or use an image URL instead\n\n' +
+                'Continue anyway?'
+            );
+            if (!continueUpload) return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            await saveImage(level, e.target.result);
+            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
     } else if (url) {
-        // Use URL directly (no upload needed)
+        // Use URL directly
         await saveImage(level, url);
         urlInput.value = '';
     } else {

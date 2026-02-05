@@ -12,7 +12,6 @@ const firebaseConfig = {
 
 // Global variables
 let db;
-let storage;
 const COLLECTION_NAME = 'valentineData';
 
 // Initialize Firebase and wait for it to be ready
@@ -31,9 +30,6 @@ function initializeFirebase() {
             
             // Initialize Firestore
             db = firebase.firestore();
-            
-            // Initialize Storage
-            storage = firebase.storage();
             
             console.log('Firebase initialized successfully');
             resolve();

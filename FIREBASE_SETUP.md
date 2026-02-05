@@ -19,14 +19,6 @@ Your website now uses Firebase Firestore to sync data across all devices! Follow
 4. Choose a Firestore location (select closest to your users)
 5. Click **Enable**
 
-### Step 2.5: Enable Firebase Storage
-
-1. In your Firebase project, go to **Build** → **Storage**
-2. Click **Get Started**
-3. Select **Start in test mode** (for easier setup)
-4. Use the same location as Firestore
-5. Click **Done**
-
 ### Step 3: Get Your Firebase Configuration
 
 1. In Firebase Console, go to **Project Settings** (gear icon)
@@ -65,7 +57,7 @@ const firebaseConfig = {
 
 3. Save the file
 
-### Step 5: Set Up Firestore Security Rules (Optional but Recommended)
+### Step 5: Set Up Firestore Security Rules
 
 For better security after testing, update your Firestore rules:
 
@@ -85,25 +77,7 @@ service cloud.firestore {
 
 3. Click **Publish**
 
-### Step 5.5: Set Up Storage Security Rules
-
-1. Go to **Storage** → **Rules** tab
-2. Replace the rules with:
-
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /valentine-images/{allPaths=**} {
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-3. Click **Publish**
-
-For production, you should add proper authentication!
+**Note:** For production with multiple users, you should add proper authentication!
 
 ### Step 6: Test Your Setup
 
@@ -115,11 +89,11 @@ For production, you should add proper authentication!
 ## 📱 Cross-Device Sync
 
 Now that you're using Firebase:
-- **Images** stored in Firebase Storage (no size limits!)
+- **Images** stored as base64 data URLs in Firestore (keep under 800KB per image)
 - **Data** (names, keys, image URLs) stored in Firestore
 - Works across all devices
 - Real-time synchronization
-- No need for backend servers
+- No need for backend servers or storage rules
 
 ## 🚀 Deploy to GitHub Pages
 
@@ -133,9 +107,12 @@ Your website is already configured for GitHub Pages! Just:
 - Keep your Firebase API key in the code - it's safe for web apps (Firebase has security rules to protect your data)
 - The current setup is in "test mode" - perfect for personal use
 - For production with multiple users, implement proper authentication
+- **Image size recommendation:** Keep images under 800KB for best performance
+  - Firestore has a 1MB document limit
+  - Use image compression tools or smaller images
+  - Or use image URLs from external hosts (no size limit)
 - Firebase free tier includes:
   - **Firestore:** 50,000 reads/day, 20,000 writes/day, 1 GB storage
-  - **Storage:** 5 GB storage, 1 GB/day downloads
   - More than enough for personal use!
 
 ## 🆘 Troubleshooting
@@ -143,8 +120,14 @@ Your website is already configured for GitHub Pages! Just:
 **Data not syncing?**
 - Check browser console for errors (F12)
 - Verify firebase-config.js has correct credentials
-- Make sure Firestore AND Storage are enabled in Firebase Console
-- Check that security rules allow read/write for both services
+- Make sure Firestore is enabled in Firebase Console
+- Check that security rules allow read/write
+
+**"Document size exceeds limit" error?**
+- Your images are too large (over 1MB)
+- Compress your images or use smaller ones
+- Use image URLs instead of uploading files
+- Recommended: Keep images under 800KB
 
 **"Firebase not defined" error?**
 - Make sure you're connected to the internet
