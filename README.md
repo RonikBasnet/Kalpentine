@@ -9,9 +9,22 @@ A fun, interactive web app to ask someone to be your Valentine! Features multipl
 - **Success Celebration**: Special image and confetti when they say "Yes!"
 - **Admin Panel**: Easy management of people and their images
 - **Secret Key Protection**: Prevents users from accessing others' messages
-- **Fully Static**: No backend required - perfect for GitHub Pages!
+- **Cross-Device Sync**: Uses Firebase Firestore - data syncs across all devices
+- **Fully Static Frontend**: Serverless architecture perfect for GitHub Pages!
 
 ## 🚀 Quick Start
+
+### ⚠️ First Time Setup - Configure Firebase
+
+**IMPORTANT**: Before using the app, you must set up Firebase for data storage.
+
+📖 **Follow the detailed guide**: [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
+
+Quick summary:
+1. Create a free Firebase project
+2. Enable Firestore Database
+3. Copy your config to `firebase-config.js`
+4. Done! Data now syncs across all devices
 
 ### For Users
 
@@ -34,10 +47,12 @@ Kalpentine/
 ├── admin.html          # Admin panel
 ├── admin.js            # Admin panel logic
 ├── styles.css          # All styling
+├── firebase-config.js  # Firebase configuration (you need to set this up!)
 ├── images/             # Image assets
 │   ├── john/          # Example person's images
 │   ├── sarah/         # Example person's images
 │   └── alex/          # Example person's images
+├── FIREBASE_SETUP.md   # Firebase setup instructions (READ THIS FIRST!)
 ├── DEPLOYMENT.md       # GitHub Pages deployment guide
 └── README.md           # This file
 ```
@@ -94,10 +109,19 @@ Then enable GitHub Pages in repository Settings → Pages.
 
 ## 💾 Data Storage
 
-- Uses browser `localStorage` for all data
-- No backend or database required
-- Data persists per browser/device
-- Each domain (localhost vs GitHub Pages) has separate storage
+- Uses **Firebase Firestore** for cloud storage
+- **Cross-device sync**: Data accessible from any device
+- **No backend required**: Serverless architecture
+- **Free tier**: Sufficient for personal use (50k reads/day, 20k writes/day)
+- See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for setup instructions
+
+## 🛠️ Technologies
+
+- Pure HTML/CSS/JavaScript
+- Firebase Firestore (cloud database)
+- Firebase SDK
+- No frameworks or dependencies
+- FileReader API (for image uploads)
 
 ## 🎨 Customization
 
@@ -112,13 +136,6 @@ Edit `script.js` - look for the `messages` array to customize desperation texts
 
 ### Images
 Replace or add images in the `images/` folder
-
-## 🛠️ Technologies
-
-- Pure HTML/CSS/JavaScript
-- No frameworks or dependencies
-- LocalStorage API
-- FileReader API (for image uploads)
 
 ## 📝 Admin Features
 
@@ -152,11 +169,13 @@ Feel free to fork and add features like:
 
 ## 💡 Tips
 
+- **Set up Firebase first** - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
 - Keep images under 500KB each for best performance
 - Use romantic/funny memes for rejection images
 - Use celebratory images for success
 - Test locally before deploying
 - Share the secret keys privately with each person
+- Data syncs across devices - edit anywhere, view everywhere!
 
 ---
 

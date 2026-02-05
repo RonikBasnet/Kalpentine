@@ -1,19 +1,43 @@
-// Storage key for localStorage
-const STORAGE_KEY = 'valentineData';
-
-// Get all data from localStorage
-function getData() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : {};
+// Get all data from Firestore
+async function getData() {
+    try {
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+        const data = {};
+        snapshot.forEach(doc => {
+            data[doc.id] = doc.data();
+        });
+        return data;
+    } catch (error) {
+        console.error('Error getting data:', error);
+        return {};
+    }
 }
 
-// Save data to localStorage
-function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+// Save data for a specific name to Firestore
+async function saveNameData(name, data) {
+    try {
+        await db.collection(COLLECTION_NAME).doc(name).set(data);
+        return true;
+    } catch (error) {
+        console.error('Error saving data:', error);
+        alert('Error saving data. Please check your Firebase configuration.');
+        return false;
+    }
+}
+
+// Delete name from Firestore
+async function deleteNameData(name) {
+    try {
+        await db.collection(COLLECTION_NAME).doc(name).delete();
+        return true;
+    } catch (error) {
+        console.error('Error deleting data:', error);
+        return false;
+    }
 }
 
 // Seed function to populate with sample data
-function seedData() {
+async function seedData() {
     const sampleData = {
         "John": {
             secretKey: "love123",
@@ -50,8 +74,11 @@ function seedData() {
         }
     };
     
-    saveData(sampleData);
-    loadNames();
+    // Save each name individually to Firestore
+    for (const [name, data] of Object.entries(sampleData)) {
+        await saveNameData(name, data);
+    }
+    await loadNames();
     alert('Sample data has been seeded! 🎉\n\nPeople added:\n- John (key: love123)\n- Sarah (key: heart456)\n- Alex (key: valentine789)\n\nEach has 5 rejection images and 1 acceptance image.\n\n⚠️ Remember to add actual image files to the images/ folder!');
 }
 
@@ -72,8 +99,8 @@ const updateKeyBtn = document.getElementById('updateKeyBtn');
 const currentKeyDisplay = document.getElementById('currentKeyDisplay');
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    loadNames();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadNames();
     setupEventListeners();
 });
 
@@ -121,8 +148,8 @@ function setupEventListeners() {
 }
 
 // Load names into select and list
-function loadNames() {
-    const data = getData();
+async function loadNames() {
+    const data = await getData();
     const names = Object.keys(data);
     
     // Update select dropdown
@@ -161,7 +188,7 @@ function loadNames() {
 }
 
 // Add new name
-function addName() {
+async function addName() {
     const name = newNameInput.value.trim();
     
     if (!name) {
@@ -169,7 +196,7 @@ function addName() {
         return;
     }
     
-    const data = getData();
+    const data = await getData();
     
     // Check if name already exists (case-insensitive)
     const nameExists = Object.keys(data).some(
@@ -190,14 +217,14 @@ function addName() {
     }
     
     // Add new name with empty images object and secret key
-    data[name] = {
+    const newData = {
         secretKey: secretKey.trim(),
         images: {}
     };
     
-    saveData(data);
+    await saveNameData(name, newData);
     newNameInput.value = '';
-    loadNames();
+    await loadNames();
     
     alert(`Name "${name}" added successfully! Secret key has been set.`);
 }
@@ -216,13 +243,13 @@ function handleNameSelect() {
     currentNameSpan.textContent = selectedName;
     imageSection.style.display = 'block';
     
-    loadImagesForName(selectedName);
-    displaySecretKey(selectedName);
+    await loadImagesForName(selectedName);
+    await displaySecretKey(selectedName);
 }
 
 // Display secret key for selected name
-function displaySecretKey(name) {
-    const data = getData();
+async function displaySecretKey(name) {
+    const data = await getData();
     const userData = data[name];
     
     if (userData && currentKeyDisplay) {
@@ -232,7 +259,7 @@ function displaySecretKey(name) {
 }
 
 // Update secret key
-function updateSecretKey() {
+async function updateSecretKey() {
     if (!currentSelectedName) {
         alert('Please select a name first!');
         return;
@@ -245,20 +272,20 @@ function updateSecretKey() {
         return;
     }
     
-    const data = getData();
+    const data = await getData();
     
     if (data[currentSelectedName]) {
         data[currentSelectedName].secretKey = newKey;
-        saveData(data);
+        await saveNameData(currentSelectedName, data[currentSelectedName]);
         secretKeyInput.value = '';
-        displaySecretKey(currentSelectedName);
+        await displaySecretKey(currentSelectedName);
         alert('Secret key updated successfully!');
     }
 }
 
 // Load images for selected name
-function loadImagesForName(name) {
-    const data = getData();
+async function loadImagesForName(name) {
+    const data = await getData();
     const userData = data[name];
     
     if (!userData) return;
@@ -307,7 +334,8 @@ function handleFileSelect(event, level) {
 }
 
 // Upload image (from file or URL)
-function uploadImage(level) {
+// Upload image (from file or URL)
+async function uploadImage(level) {
     if (!currentSelectedName) {
         alert('Please select a name first!');
         return;
@@ -327,25 +355,25 @@ function uploadImage(level) {
         }
         
         const reader = new FileReader();
-        reader.onload = (e) => {
-            saveImage(level, e.target.result);
+        reader.onload = async (e) => {
+            await saveImage(level, e.target.result);
             fileInput.value = '';
         };
         reader.readAsDataURL(file);
     } else if (url) {
         // Use URL
-        saveImage(level, url);
+        await saveImage(level, url);
         urlInput.value = '';
     } else {
         alert('Please select a file or enter an image URL!');
     }
 }
 
-// Save image to localStorage
-function saveImage(level, imageUrl) {
+// Save image to Firestore
+async function saveImage(level, imageUrl) {
     if (!currentSelectedName) return;
     
-    const data = getData();
+    const data = await getData();
     
     if (!data[currentSelectedName]) {
         data[currentSelectedName] = { images: {} };
@@ -357,15 +385,15 @@ function saveImage(level, imageUrl) {
     
     data[currentSelectedName].images[level] = imageUrl;
     
-    saveData(data);
-    loadImagesForName(currentSelectedName);
-    loadNames(); // Refresh the names list to update image count
+    await saveNameData(currentSelectedName, data[currentSelectedName]);
+    await loadImagesForName(currentSelectedName);
+    await loadNames(); // Refresh the names list to update image count
     
     alert('Image saved successfully!');
 }
 
 // Remove image
-function removeImage(level) {
+async function removeImage(level) {
     if (!currentSelectedName) {
         alert('Please select a name first!');
         return;
@@ -375,20 +403,20 @@ function removeImage(level) {
         return;
     }
     
-    const data = getData();
+    const data = await getData();
     
     if (data[currentSelectedName] && data[currentSelectedName].images) {
         delete data[currentSelectedName].images[level];
-        saveData(data);
-        loadImagesForName(currentSelectedName);
-        loadNames(); // Refresh the names list to update image count
+        await saveNameData(currentSelectedName, data[currentSelectedName]);
+        await loadImagesForName(currentSelectedName);
+        await loadNames(); // Refresh the names list to update image count
         
         alert('Image removed successfully!');
     }
 }
 
 // Delete name
-function deleteName() {
+async function deleteName() {
     const selectedName = nameSelect.value;
     
     if (!selectedName) {
@@ -400,14 +428,12 @@ function deleteName() {
         return;
     }
     
-    const data = getData();
-    delete data[selectedName];
-    saveData(data);
+    await deleteNameData(selectedName);
     
     nameSelect.value = '';
     currentSelectedName = null;
     imageSection.style.display = 'none';
     
-    loadNames();
+    await loadNames();
     alert(`"${selectedName}" has been deleted successfully!`);
 }

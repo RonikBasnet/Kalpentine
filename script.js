@@ -1,10 +1,16 @@
-// Storage key for localStorage
-const STORAGE_KEY = 'valentineData';
-
-// Get all data from localStorage
-function getData() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : {};
+// Get all data from Firestore
+async function getData() {
+    try {
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+        const data = {};
+        snapshot.forEach(doc => {
+            data[doc.id] = doc.data();
+        });
+        return data;
+    } catch (error) {
+        console.error('Error getting data:', error);
+        return {};
+    }
 }
 
 // Variables
@@ -50,7 +56,7 @@ yesBtn.addEventListener('click', handleYes);
 noBtn.addEventListener('click', handleNo);
 
 // Handle name submission
-function handleNameSubmit() {
+async function handleNameSubmit() {
     const name = nameInput.value.trim();
     const secretKey = secretKeyInput.value.trim();
     
@@ -65,7 +71,7 @@ function handleNameSubmit() {
     }
     
     currentName = name;
-    const allData = getData();
+    const allData = await getData();
     
     // Normalize name for lookup (case-insensitive)
     const normalizedName = name.toLowerCase();
