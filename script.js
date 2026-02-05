@@ -27,6 +27,8 @@ const desperationImage = document.getElementById('desperationImage');
 const desperationLevel = document.getElementById('desperationLevel');
 const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
+const questionText = document.getElementById('questionText');
+const celebrationText = document.getElementById('celebrationText');
 
 const successImage = document.getElementById('successImage');
 const successMessage = document.getElementById('successMessage');
@@ -101,11 +103,24 @@ function handleNameSubmit() {
     currentLevel = 1;
     updateQuestionScreen();
     showScreen(questionScreen);
+    
+    // Activate cutesy mode after successful authentication
+    document.body.classList.add('cutesy');
+    
+    // Update text with emojis in cutesy mode
+    questionText.textContent = 'Will you be my Valentine? 💕';
+    yesBtn.textContent = 'Yes! 💖';
+    celebrationText.textContent = '🎉 YES! 🎉';
 }
 
 // Update question screen with current level
 function updateQuestionScreen() {
-    greeting.textContent = `Hey ${currentName}! 💕`;
+    greeting.textContent = `Hey ${currentName}!`;
+    
+    // Add emoji in cutesy mode
+    if (document.body.classList.contains('cutesy')) {
+        greeting.textContent = `Hey ${currentName}! 💕`;
+    }
     
     // Get image for current level
     const imageUrl = userData.images[currentLevel.toString()];

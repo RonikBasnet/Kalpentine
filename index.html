@@ -10,11 +10,11 @@
     <div class="container">
         <!-- Name Input Screen -->
         <div id="nameScreen" class="screen active">
-            <h1 class="title">💝 Something Special 💝</h1>
-            <p class="subtitle">Enter your name and secret key to see a special message...</p>
+            <h1 class="title">Welcome</h1>
+            <p class="subtitle">Please enter your credentials</p>
             <div class="input-group">
-                <input type="text" id="nameInput" placeholder="Your name here..." />
-                <input type="password" id="secretKeyInput" placeholder="Your secret key..." />
+                <input type="text" id="nameInput" placeholder="Name" />
+                <input type="password" id="secretKeyInput" placeholder="Key" />
                 <button id="submitName">Continue</button>
             </div>
         </div>
@@ -25,9 +25,9 @@
             <div class="image-container">
                 <img id="desperationImage" src="" alt="Please be my valentine" />
             </div>
-            <p class="question">Will you be my Valentine? 💕</p>
+            <p class="question" id="questionText">Will you be my Valentine?</p>
             <div class="button-group">
-                <button id="yesBtn" class="yes-btn">Yes! 💖</button>
+                <button id="yesBtn" class="yes-btn">Yes</button>
                 <button id="noBtn" class="no-btn">No</button>
             </div>
             <p class="desperation-level" id="desperationLevel"></p>
@@ -35,7 +35,7 @@
 
         <!-- Success Screen -->
         <div id="successScreen" class="screen">
-            <h1 class="celebration">🎉 YES! 🎉</h1>
+            <h1 class="celebration" id="celebrationText">YES!</h1>
             <div class="image-container">
                 <img id="successImage" src="" alt="We're valentines!" />
             </div>
@@ -44,9 +44,9 @@
 
         <!-- No Images Screen -->
         <div id="noImagesScreen" class="screen">
-            <h1 class="title">Oops! 😅</h1>
-            <p class="subtitle">No images have been set up for your name yet.</p>
-            <p class="hint">Ask the admin to add some images first!</p>
+            <h1 class="title">No Images Found</h1>
+            <p class="subtitle">No images have been set up yet.</p>
+            <p class="hint">Contact the admin to add images.</p>
             <button onclick="location.reload()">Try Again</button>
         </div>
     </div>
