@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question 💕</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Name Input Screen -->
+        <div id="nameScreen" class="screen active">
+            <h1 class="title">💝 Something Special 💝</h1>
+            <p class="subtitle">Enter your name and secret key to see a special message...</p>
+            <div class="input-group">
+                <input type="text" id="nameInput" placeholder="Your name here..." />
+                <input type="password" id="secretKeyInput" placeholder="Your secret key..." />
+                <button id="submitName">Continue</button>
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="questionScreen" class="screen">
+            <h1 class="greeting" id="greeting"></h1>
+            <div class="image-container">
+                <img id="desperationImage" src="" alt="Please be my valentine" />
+            </div>
+            <p class="question">Will you be my Valentine? 💕</p>
+            <div class="button-group">
+                <button id="yesBtn" class="yes-btn">Yes! 💖</button>
+                <button id="noBtn" class="no-btn">No</button>
+            </div>
+            <p class="desperation-level" id="desperationLevel"></p>
+        </div>
+
+        <!-- Success Screen -->
+        <div id="successScreen" class="screen">
+            <h1 class="celebration">🎉 YES! 🎉</h1>
+            <div class="image-container">
+                <img id="successImage" src="" alt="We're valentines!" />
+            </div>
+            <p class="success-message" id="successMessage"></p>
+        </div>
+
+        <!-- No Images Screen -->
+        <div id="noImagesScreen" class="screen">
+            <h1 class="title">Oops! 😅</h1>
+            <p class="subtitle">No images have been set up for your name yet.</p>
+            <p class="hint">Ask the admin to add some images first!</p>
+            <button onclick="location.reload()">Try Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

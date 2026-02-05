@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>💕 Admin Panel 💕</h1>
+            <a href="index.html" class="back-link">← Back to Main Site</a>
+            <button id="seedDataBtn" class="seed-btn">🌱 Seed Sample Data</button>
+        </div>
+
+        <div class="admin-content">
+            <!-- Name Management Section -->
+            <div class="admin-section">
+                <h2>Manage Names & Images</h2>
+                
+                <!-- Add New Name -->
+                <div class="form-group">
+                    <label for="newName">Add New Name:</label>
+                    <div class="input-button-group">
+                        <input type="text" id="newName" placeholder="Enter name..." />
+                        <button id="addNameBtn">Add Name</button>
+                    </div>
+                </div>
+
+                <!-- Select Name to Edit -->
+                <div class="form-group">
+                    <label for="nameSelect">Select Name to Edit:</label>
+                    <select id="nameSelect">
+                        <option value="">-- Select a name --</option>
+                    </select>
+                    <button id="deleteNameBtn" class="delete-btn">Delete Selected Name</button>
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="admin-section" id="imageSection" style="display: none;">
+                <h2>Images for: <span id="currentName"></span></h2>
+                
+                <!-- Secret Key Management -->
+                <div class="secret-key-section">
+                    <h3>🔐 Secret Key Management</h3>
+                    <p><strong>Current Secret Key:</strong> <span id="currentKeyDisplay" class="key-display">-</span></p>
+                    <div class="input-button-group">
+                        <input type="text" id="secretKeyInput" placeholder="Enter new secret key..." />
+                        <button id="updateKeyBtn" class="update-key-btn">Update Key</button>
+                    </div>
+                    <p class="key-hint">⚠️ Users will need this key to access their images!</p>
+                </div>
+                
+                <div class="images-grid">
+                    <!-- Level 1 -->
+                    <div class="image-upload-card">
+                        <h3>Level 1 - First No</h3>
+                        <div class="image-preview" id="preview1">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFile1" accept="image/*" data-level="1" />
+                        <input type="text" id="imageUrl1" placeholder="Or paste image URL..." data-level="1" />
+                        <button class="upload-btn" data-level="1">Set Image</button>
+                        <button class="remove-btn" data-level="1">Remove</button>
+                    </div>
+
+                    <!-- Level 2 -->
+                    <div class="image-upload-card">
+                        <h3>Level 2 - Second No</h3>
+                        <div class="image-preview" id="preview2">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFile2" accept="image/*" data-level="2" />
+                        <input type="text" id="imageUrl2" placeholder="Or paste image URL..." data-level="2" />
+                        <button class="upload-btn" data-level="2">Set Image</button>
+                        <button class="remove-btn" data-level="2">Remove</button>
+                    </div>
+
+                    <!-- Level 3 -->
+                    <div class="image-upload-card">
+                        <h3>Level 3 - Third No</h3>
+                        <div class="image-preview" id="preview3">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFile3" accept="image/*" data-level="3" />
+                        <input type="text" id="imageUrl3" placeholder="Or paste image URL..." data-level="3" />
+                        <button class="upload-btn" data-level="3">Set Image</button>
+                        <button class="remove-btn" data-level="3">Remove</button>
+                    </div>
+
+                    <!-- Level 4 -->
+                    <div class="image-upload-card">
+                        <h3>Level 4 - Fourth No</h3>
+                        <div class="image-preview" id="preview4">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFile4" accept="image/*" data-level="4" />
+                        <input type="text" id="imageUrl4" placeholder="Or paste image URL..." data-level="4" />
+                        <button class="upload-btn" data-level="4">Set Image</button>
+                        <button class="remove-btn" data-level="4">Remove</button>
+                    </div>
+
+                    <!-- Level 5 -->
+                    <div class="image-upload-card">
+                        <h3>Level 5 - Final No</h3>
+                        <div class="image-preview" id="preview5">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFile5" accept="image/*" data-level="5" />
+                        <input type="text" id="imageUrl5" placeholder="Or paste image URL..." data-level="5" />
+                        <button class="upload-btn" data-level="5">Set Image</button>
+                        <button class="remove-btn" data-level="5">Remove</button>
+                    </div>
+
+                    <!-- Success Image -->
+                    <div class="image-upload-card success-card">
+                        <h3>✅ Success Image (When She Says Yes!)</h3>
+                        <div class="image-preview" id="previewSuccess">
+                            <span class="no-image">No image</span>
+                        </div>
+                        <input type="file" id="imageFileSuccess" accept="image/*" data-level="success" />
+                        <input type="text" id="imageUrlSuccess" placeholder="Or paste image URL..." data-level="success" />
+                        <button class="upload-btn" data-level="success">Set Image</button>
+                        <button class="remove-btn" data-level="success">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing Names List -->
+            <div class="admin-section">
+                <h2>All Names</h2>
+                <div id="namesList" class="names-list">
+                    <p class="empty-state">No names added yet. Add one above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
